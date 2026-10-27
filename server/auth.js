@@ -266,6 +266,78 @@ export function registerAuthRoutes(app) {
     } catch (error) { next(error); }
   });
 
+  app.get('/api/admin/users', requireAuth, requireRole('super_admin'), async (req, res, next) => {
+    try {
+      const limit = Math.min(Math.max(Number(req.query.limit || 50), 1), 100);
+      const offset = Math.max(Number(req.query.offset || 0), 0);
+      const { rows } = await getPool().query(
+        `SELECT u.id, u.email_normalized, u.full_name, u.status, u.last_login_at, u.created_at,
+                COALESCE(json_agg(json_build_object('role', ra.role, 'organisation_id', ra.organisation_id, 'organisation_name', o.display_name))
+                  FILTER (WHERE ra.id IS NOT NULL), '[]'::json) AS roles
+           FROM users u
+           LEFT JOIN role_assignments ra ON ra.user_id = u.id AND ra.revoked_at IS NULL
+           LEFT JOIN organisations o ON o.id = ra.organisation_id
+          GROUP BY u.id
+          ORDER BY u.created_at DESC
+          LIMIT $1 OFFSET $2`,
+        [limit, offset],
+      );
+      return res.json({ users: rows, limit, offset });
+    } catch (error) { next(error); }
+  });
+
+  app.patch('/api/admin/users/:id/status', requireAuth, requireRole('super_admin'), requireCsrf, async (req, res, next) => {
+    try {
+      const status = req.body?.status;
+      const reason = String(req.body?.reason || '').trim();
+      if (!['active', 'suspended'].includes(status) || reason.length < 3 || reason.length > 500) {
+        return res.status(400).json({ error: 'status (active or suspended) and a reason are required' });
+      }
+      if (req.params.id === req.auth.userId && status === 'suspended') {
+        return res.status(400).json({ error: 'You cannot suspend your own account' });
+      }
+      const db = getPool();
+      const updated = await db.query(
+        'UPDATE users SET status = $1, updated_at = now() WHERE id = $2 RETURNING id,email_normalized,full_name,status',
+        [status, req.params.id],
+      );
+      if (!updated.rowCount) return res.status(404).json({ error: 'User not found' });
+      if (status === 'suspended') await db.query('UPDATE app_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL', [req.params.id]);
+      await audit({ actorUserId: req.auth.userId, action: 'admin.user_status_changed', targetType: 'user', targetId: req.params.id, requestId: req.id, reason, metadata: { status } });
+      return res.json({ user: updated.rows[0] });
+    } catch (error) { next(error); }
+  });
+
+  app.patch('/api/admin/organisations/:id/status', requireAuth, requireRole('super_admin'), requireCsrf, async (req, res, next) => {
+    try {
+      const status = req.body?.status;
+      const reason = String(req.body?.reason || '').trim();
+      if (!['active', 'suspended', 'archived'].includes(status) || reason.length < 3 || reason.length > 500) {
+        return res.status(400).json({ error: 'Valid status and reason are required' });
+      }
+      const { rows } = await getPool().query(
+        'UPDATE organisations SET status = $1, verified_at = CASE WHEN $1 = \'active\' THEN COALESCE(verified_at, now()) ELSE verified_at END, updated_at = now() WHERE id = $2 RETURNING id,type,legal_name,display_name,status,verified_at',
+        [status, req.params.id],
+      );
+      if (!rows.length) return res.status(404).json({ error: 'Organisation not found' });
+      await audit({ actorUserId: req.auth.userId, action: 'admin.organisation_status_changed', targetType: 'organisation', targetId: req.params.id, requestId: req.id, reason, metadata: { status } });
+      return res.json({ organisation: rows[0] });
+    } catch (error) { next(error); }
+  });
+
+  app.get('/api/admin/audit-events', requireAuth, requireRole('super_admin'), async (req, res, next) => {
+    try {
+      const limit = Math.min(Math.max(Number(req.query.limit || 50), 1), 100);
+      const offset = Math.max(Number(req.query.offset || 0), 0);
+      const { rows } = await getPool().query(
+        `SELECT id, actor_user_id, action, target_type, target_id, organisation_id, request_id, reason, metadata_json, created_at
+           FROM audit_events ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
+        [limit, offset],
+      );
+      return res.json({ events: rows, limit, offset });
+    } catch (error) { next(error); }
+  });
+
   app.post('/api/auth/accept-invitation', async (req, res, next) => {
     try {
       const token = String(req.body?.token || '');
