@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+:root {
+--background: 44 34% 95%;
+--foreground: 152 14% 13%;
+--card: 40 46% 99%;
+--card-foreground: 152 14% 13%;
+--popover: 40 46% 99%;
+--popover-foreground: 152 14% 13%;
+--primary: 152 36% 25%;
+--primary-foreground: 44 40% 97%;
+--secondary: 44 24% 90%;
+--secondary-foreground: 152 14% 16%;
+--muted: 44 22% 91%;
+--muted-foreground: 152 8% 42%;
+--accent: 96 20% 44%;
+--accent-foreground: 44 40% 97%;
+--destructive: 8 64% 48%;
+--destructive-foreground: 44 40% 97%;
+--border: 44 18% 86%;
+--input: 44 18% 86%;
+--ring: 152 36% 25%;
+--chart-1: 152 34% 38%;
+--chart-2: 190 32% 42%;
+--chart-3: 42 34% 60%;
+--chart-4: 150 8% 32%;
+--chart-5: 96 20% 46%;
+--radius: 0.75rem;
+--font-heading: 'Fraunces', ui-serif, Georgia, serif;
+--font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+--font-display: 'Fraunces', ui-serif, Georgia, serif;
+--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+--sidebar-background: 40 46% 99%;
+--sidebar-foreground: 152 14% 16%;
+--sidebar-primary: 152 36% 25%;
+--sidebar-primary-foreground: 44 40% 97%;
+--sidebar-accent: 44 24% 92%;
+--sidebar-accent-foreground: 152 14% 16%;
+--sidebar-border: 44 18% 86%;
+--sidebar-ring: 152 36% 25%;
+}
+
+.dark {
+--background: 160 18% 8%;
+--foreground: 44 30% 90%;
+--card: 158 16% 11%;
+--card-foreground: 44 30% 90%;
+--popover: 158 16% 11%;
+--popover-foreground: 44 30% 90%;
+--primary: 152 34% 52%;
+--primary-foreground: 160 20% 10%;
+--secondary: 158 12% 18%;
+--secondary-foreground: 44 30% 90%;
+--muted: 158 12% 18%;
+--muted-foreground: 44 12% 62%;
+--accent: 96 22% 52%;
+--accent-foreground: 160 20% 10%;
+--destructive: 8 58% 52%;
+--destructive-foreground: 44 40% 97%;
+--border: 158 12% 22%;
+--input: 158 12% 22%;
+--ring: 152 34% 52%;
+--chart-1: 152 34% 52%;
+--chart-2: 190 32% 52%;
+--chart-3: 42 40% 66%;
+--chart-4: 0 0% 70%;
+--chart-5: 96 22% 56%;
+--sidebar-background: 158 16% 11%;
+--sidebar-foreground: 44 30% 90%;
+--sidebar-primary: 152 34% 52%;
+--sidebar-primary-foreground: 160 20% 10%;
+--sidebar-accent: 158 12% 18%;
+--sidebar-accent-foreground: 44 30% 90%;
+--sidebar-border: 158 12% 22%;
+--sidebar-ring: 152 34% 52%;
+}
+}
+
+@layer base {
+* {
+@apply border-border outline-ring/50;
+}
+body {
+@apply bg-background text-foreground font-body antialiased;
+font-feature-settings: "ss01", "cv01", "cv11";
+}
+::selection {
+background-color: hsl(var(--primary) / 0.22);
+color: hsl(var(--foreground));
+}
+}
+
+@layer utilities {
+.font-display {
+font-family: var(--font-display);
+font-optical-sizing: auto;
+letter-spacing: -0.02em;
+}
+.text-balance {
+text-wrap: balance;
+}
+.grain {
+background-image: radial-gradient(hsl(var(--foreground) / 0.03) 1px, transparent 1px);
+background-size: 4px 4px;
+}
+.bg-grid {
+background-image:
+linear-gradient(hsl(var(--foreground) / 0.045) 1px, transparent 1px),
+linear-gradient(90deg, hsl(var(--foreground) / 0.045) 1px, transparent 1px);
+background-size: 28px 28px;
+}
+.bg-grid-fine {
+background-image:
+linear-gradient(hsl(var(--foreground) / 0.05) 1px, transparent 1px),
+linear-gradient(90deg, hsl(var(--foreground) / 0.05) 1px, transparent 1px);
+background-size: 14px 14px;
+}
+.glass {
+background-color: hsl(var(--card) / 0.72);
+backdrop-filter: blur(14px) saturate(140%);
+}
+.leaflet-container {
+font-family: var(--font-body);
+background: hsl(44 22% 88%);
+}
+.leaflet-control-attribution {
+font-size: 10px !important;
+background: hsl(var(--card) / 0.7) !important;
+backdrop-filter: blur(4px);
+}
+}
