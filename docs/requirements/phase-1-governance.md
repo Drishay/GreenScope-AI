@@ -296,3 +296,22 @@ These are implementation gates, not assumptions to silently hard-code:
 - Which identity/verification method is acceptable for institutions and government staff?
 - What retention period and disclosure rules apply to case documents, uploaded evidence and audit logs?
 - Who signs off on the legal templates, jurisdiction map, deadline policies and public claims?
+
+
+## 14. Confirmed pilot decisions (2026-10-27)
+
+These decisions were confirmed by the project owner and supersede any unresolved defaults above:
+
+- **Pilot mode:** Advisory / shadow mode. The first release supports screening, human review and case workflow; it does not represent itself as an official enforcement channel.
+- **Initial site scope:** Mixed institutions and buildings. Requests for information are issue-specific and must not require irrelevant records.
+- **Identity approach:** Secure accounts for Super Admin, Authority and Institution. Public pages remain accessible without login. Case tokens may be used as references, but not as a substitute for authentication for sensitive records.
+- **Environmental analysis priority:** Real satellite/geospatial land-cover analysis first, followed by object-level detection for solar panels, generator-related equipment where imagery supports it, and scrap/storage/waste areas.
+- **First geographic focus:** Design for a Uttar Pradesh pilot, with Noida / Greater Noida as the initial candidate geography. Authority mapping is a reviewed configuration and must be validated with participating offices.
+- **Existing synthetic reports:** Preserve legacy reports for history/demo purposes, but visibly label them as synthetic. Do not mix them with real geospatial outputs without a clear method/source marker.
+
+### Phase 1 decision implications
+
+1. Do not enable official statutory notice issuance in the first advisory release. Support internal drafts and clearly labelled non-statutory requests only; an authority-partner process can be enabled later after written approval and legal review.
+2. Do not claim that a site violates law solely because the model flags low vegetation, high built cover, a possible generator, or a possible scrap area.
+3. Prioritise a reproducible land-cover pipeline with source imagery, image dates, class-wise area, confidence/uncertainty and unknown pixels. Object detection follows as a separate model/data milestone.
+4. Use account-based RBAC and organisation/site scoping from the beginning. A public site or token-only flow must not leak case records.
