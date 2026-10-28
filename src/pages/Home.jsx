@@ -14,7 +14,7 @@ featured: true,
 {
 icon: Layers,
 title: 'AI land-cover classification',
-body: 'Vegetation, buildings, roads, open land and water — identified and quantified as indicative cover percentages.',
+body: 'Vegetation, buildings, roads, open land and water - identified and quantified as indicative cover percentages.',
 },
 {
 icon: BarChart3,
@@ -54,7 +54,7 @@ Geospatial environmental intelligence
 See the green, the grey, and the carbon behind any place.
 </h1>
 <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-GreenScope turns satellite imagery and a drawn boundary into a clear environmental report — land-cover distribution, carbon impact and sustainability, in seconds.
+GreenScope turns satellite imagery and a drawn boundary into a clear environmental report - land-cover distribution, carbon impact and sustainability, in seconds.
 </p>
 <div className="mt-9 flex flex-col gap-3 sm:flex-row">
 <Link
