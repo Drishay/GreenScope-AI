@@ -17,6 +17,8 @@ import Workspace from "@/pages/Workspace";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
 import LegacyAnalysisRedirect from "@/components/LegacyAnalysisRedirect";
+import Organisations from "@/pages/Organisations";
+import Invitation from "@/pages/Invitation";
 
 export default function App() {
   return (
@@ -38,6 +40,8 @@ export default function App() {
             <Route path="login" element={<Login />} />
             <Route path="workspace" element={<Workspace />} />
             <Route path="history" element={<History />} />
+            <Route path="organisations" element={<Organisations />} />
+            <Route path="invitation/:token" element={<Invitation />} />
             <Route path="analysis/:id" element={<AnalysisDetail />} />
           </Route>
           <Route path="/workspace" element={<Navigate to="/app/workspace" replace />} />
