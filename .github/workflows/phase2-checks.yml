@@ -1,0 +1,25 @@
+name: GreenScope Phase 2 checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [phase-2/auth-database-foundation]
+
+jobs:
+  frontend-and-security-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies and refresh lock if required
+        run: npm install
+      - name: Run security helper tests
+        run: npm test
+      - name: Build frontend
+        run: npm run build

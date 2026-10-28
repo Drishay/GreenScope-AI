@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { History, LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 function BrandMark() {
@@ -24,7 +24,7 @@ base44.auth.me().then(setUser).catch(() => {});
 }, []);
 
 const handleLogout = async () => {
-await base44.auth.logout();
+try { await base44.auth.logout(); } catch { window.location.assign('/login'); }
 };
 
 const links = [
@@ -65,6 +65,7 @@ className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 te
 >
 New analysis
 </Link>
+{!user && <Link to="/login" className="rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted">Staff sign in</Link>}
 {user && (
 <div className="relative">
 <button
@@ -119,12 +120,11 @@ className="mt-2 block rounded-xl bg-primary px-4 py-3 text-center text-sm font-m
 >
 New analysis
 </Link>
-<button
-onClick={handleLogout}
-className="mt-1 flex w-full items-center gap-2 rounded-xl px-4 py-3 text-sm text-muted-foreground"
->
-<LogOut className="h-4 w-4" /> Sign out
-</button>
+{user ? (
+<button onClick={handleLogout} className="mt-1 flex w-full items-center gap-2 rounded-xl px-4 py-3 text-sm text-muted-foreground"><LogOut className="h-4 w-4" /> Sign out</button>
+) : (
+<Link to="/login" onClick={() => setOpen(false)} className="mt-1 block rounded-xl px-4 py-3 text-sm font-medium text-primary">Staff sign in</Link>
+)}
 </div>
 </div>
 )}

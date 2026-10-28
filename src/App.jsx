@@ -9,6 +9,7 @@ import Home from "@/pages/Home";
 import Analyze from "@/pages/Analyze";
 import History from "@/pages/History";
 import AnalysisDetail from "@/pages/AnalysisDetail";
+import Login from "@/pages/Login";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/analyze" element={<Analyze />} />
             <Route path="/history" element={<History />} />
             <Route path="/analysis/:id" element={<AnalysisDetail />} />
+            <Route path="/login" element={<Login />} />
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>
