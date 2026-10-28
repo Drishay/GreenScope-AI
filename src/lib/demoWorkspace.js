@@ -43,11 +43,23 @@ function writeState(state) {
 }
 export function getDemoState() { return readState(); }
 export function getDemoUser() { return readState().currentUser; }
+export function demoRegisterCitizen({ name, email, password }) {
+  const state = readState();
+  const normalizedEmail = email.trim().toLowerCase();
+  const existing = [...DEMO_USERS, ...(state.citizens || [])].some((u) => u.email.toLowerCase() === normalizedEmail);
+  if (existing) throw new Error('An account with this email already exists. Please sign in instead.');
+  const citizen = { id: `citizen-${Date.now()}`, name: name.trim(), email: normalizedEmail, password, role: 'citizen', organisation: 'Public' };
+  state.citizens = [...(state.citizens || []), citizen];
+  state.currentUser = { id: citizen.id, name: citizen.name, email: citizen.email, role: citizen.role, organisation: citizen.organisation, demo: true };
+  writeState(state);
+  return state.currentUser;
+}
 export function demoLogin(email, password) {
-  const match = DEMO_USERS.find((u) => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password);
+  const state = readState();
+  const match = [...DEMO_USERS, ...(state.citizens || [])].find((u) => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password);
   if (!match) throw new Error('Demo sign-in failed. Use one of the demo accounts shown below.');
   const user = { id: match.id, name: match.name, email: match.email, role: match.role, organisation: match.organisation, demo: true };
-  const state = readState(); state.currentUser = user; writeState(state); return user;
+  state.currentUser = user; writeState(state); return user;
 }
 export function demoLogout() {
   const state = readState(); state.currentUser = null; writeState(state);
