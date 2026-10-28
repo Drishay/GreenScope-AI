@@ -45,7 +45,6 @@ return (
 <div className="grid items-center gap-12 lg:grid-cols-2">
 <div className="animate-fade-up">
 <div className="flex items-center gap-3">
-<span className="h-px w-8 bg-primary" />
 <span className="text-xs font-medium uppercase tracking-[0.22em] text-primary">
 Geospatial environmental intelligence
 </span>
