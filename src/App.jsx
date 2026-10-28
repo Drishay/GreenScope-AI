@@ -10,6 +10,9 @@ import Analyze from "@/pages/Analyze";
 import History from "@/pages/History";
 import AnalysisDetail from "@/pages/AnalysisDetail";
 import Login from "@/pages/Login";
+import PublicReport from "@/pages/PublicReport";
+import ReportStatus from "@/pages/ReportStatus";
+import Workspace from "@/pages/Workspace";
 
 export default function App() {
   return (
@@ -23,6 +26,9 @@ export default function App() {
             <Route path="/history" element={<History />} />
             <Route path="/analysis/:id" element={<AnalysisDetail />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/report" element={<PublicReport />} />
+            <Route path="/report-status" element={<ReportStatus />} />
+            <Route path="/workspace" element={<Workspace />} />
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>
