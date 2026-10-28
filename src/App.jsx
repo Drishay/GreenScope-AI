@@ -16,6 +16,7 @@ import ReportStatus from "@/pages/ReportStatus";
 import Workspace from "@/pages/Workspace";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
+import LegacyAnalysisRedirect from "@/components/LegacyAnalysisRedirect";
 
 export default function App() {
   return (
@@ -41,7 +42,7 @@ export default function App() {
           </Route>
           <Route path="/workspace" element={<Navigate to="/app/workspace" replace />} />
           <Route path="/history" element={<Navigate to="/app/history" replace />} />
-          <Route path="/analysis/:id" element={<Navigate to="/app/analysis/:id" replace />} />
+          <Route path="/analysis/:id" element={<LegacyAnalysisRedirect />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
         <Toaster />
