@@ -70,6 +70,12 @@ className="inline-flex items-center justify-center gap-2 rounded-full border bor
 >
 View past reports
 </Link>
+<Link
+to="/report"
+className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/30 px-7 py-3.5 text-sm font-medium text-primary transition-all hover:bg-primary/5"
+>
+Report an environmental concern
+</Link>
 </div>
 </div>
 <div className="relative animate-fade-in">
@@ -191,6 +197,29 @@ className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3
 Start an analysis <ArrowRight className="h-4 w-4" />
 </Link>
 </div>
+</div>
+</div>
+</section>
+
+{/* Public reporting and process transparency */}
+<section className="border-t border-border/60 bg-card/30">
+<div className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8">
+<div>
+<p className="text-xs font-medium uppercase tracking-[0.2em] text-primary">Community reporting</p>
+<h2 className="mt-3 font-display text-3xl font-semibold tracking-tight text-foreground">See something concerning? Report it for review.</h2>
+<p className="mt-4 leading-relaxed text-muted-foreground">Anyone can submit a suspected environmental concern without creating an account. A report is reviewed by the relevant authority or triaged when the right authority is unclear. A report is not proof of a violation.</p>
+<Link to="/report" className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground">Submit a concern <ArrowRight className="h-4 w-4"/></Link>
+<Link to="/report-status" className="ml-3 mt-6 inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-medium">Track a report</Link>
+</div>
+<div className="rounded-2xl border border-border bg-card p-6">
+<h3 className="font-display text-xl font-semibold text-foreground">What happens after a report?</h3>
+<ol className="mt-4 space-y-4 text-sm leading-6 text-muted-foreground">
+<li><strong className="text-foreground">1. Submission:</strong> A reference is created so the report can be identified.</li>
+<li><strong className="text-foreground">2. Triage and review:</strong> An authority reviews the information and may request more details or conduct checks.</li>
+<li><strong className="text-foreground">3. Appropriate action:</strong> Any formal notice, deadline, inspection or enforcement step must be decided by the competent authority under applicable rules.</li>
+<li><strong className="text-foreground">4. Updates:</strong> The reporter can use the reference to check permitted status updates. Secure contact verification will be required in the production system.</li>
+</ol>
+<p className="mt-4 rounded-xl bg-muted/60 p-3 text-xs leading-5 text-muted-foreground">Current prototype: reporting and tracking use browser-local demo data. No real authority is notified, and environmental analysis values remain illustrative.</p>
 </div>
 </div>
 </section>
