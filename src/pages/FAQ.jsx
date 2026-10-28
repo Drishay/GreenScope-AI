@@ -34,7 +34,7 @@ export default function FAQ() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-18 lg:px-8">
         <div className="flex items-center gap-3 text-primary"><CircleHelp className="h-5 w-5"/><p className="text-xs font-medium uppercase tracking-[0.2em]">Help and transparency</p></div>
         <h1 className="mt-4 max-w-4xl font-display text-4xl font-semibold tracking-tight text-foreground sm:text-6xl">Frequently asked questions</h1>
-        <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted-foreground">How the prototype works, what its indicators mean, how reports should be handled, and what carbon estimates do—and do not—tell you.</p>
+        <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted-foreground">How the prototype works, what its indicators mean, how reports should be handled, and what carbon estimates do-and do not-tell you.</p>
         <div className="mt-6 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted-foreground"><strong className="text-foreground">Prototype disclosure:</strong> Some current results and report workflows use illustrative demo data. Formulas and methodology notes below explain general calculation principles; they do not imply that a validated live environmental model is already connected.</div>
       </div>
     </section>
