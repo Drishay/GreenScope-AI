@@ -101,3 +101,26 @@ export function demoStatusLabel(status) {
     follow_up: 'Follow-up pending', closed: 'Closed',
   })[status] || status;
 }
+
+const ANALYSIS_KEY = 'greenscope.demo.savedAnalyses.v1';
+export function saveDemoAnalysis(payload, user) {
+  const all = JSON.parse(localStorage.getItem(ANALYSIS_KEY) || '{}');
+  const list = Array.isArray(all[user.id]) ? all[user.id] : [];
+  const record = { ...payload, id: `demo-analysis-${Date.now()}`, owner_id: user.id, created_date: new Date().toISOString() };
+  all[user.id] = [record, ...list];
+  localStorage.setItem(ANALYSIS_KEY, JSON.stringify(all));
+  return record;
+}
+export function getDemoAnalyses(user) {
+  if (!user) return [];
+  const all = JSON.parse(localStorage.getItem(ANALYSIS_KEY) || '{}');
+  return Array.isArray(all[user.id]) ? all[user.id] : [];
+}
+export function getDemoAnalysis(id, user) {
+  return getDemoAnalyses(user).find((item) => String(item.id) === String(id)) || null;
+}
+export function deleteDemoAnalysis(id, user) {
+  const all = JSON.parse(localStorage.getItem(ANALYSIS_KEY) || '{}');
+  all[user.id] = getDemoAnalyses(user).filter((item) => String(item.id) !== String(id));
+  localStorage.setItem(ANALYSIS_KEY, JSON.stringify(all));
+}
