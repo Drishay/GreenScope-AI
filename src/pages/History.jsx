@@ -66,7 +66,7 @@ className="group flex flex-col rounded-2xl border border-border bg-card p-5 tran
 <div className="flex items-center justify-between">
 <span className={`flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${tone.bg} ${tone.text}`}>
 <span className="h-2 w-2 rounded-full" style={{ background: tone.dot }} />
-{it.green_cover_rating || '—'}
+{it.green_cover_rating || '-'}
 </span>
 <span className="text-xs text-muted-foreground">
 {new Date(it.created_date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
