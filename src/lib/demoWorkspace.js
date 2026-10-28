@@ -1,4 +1,4 @@
-const KEY = 'greenscope.demo.workspace.v1';
+const KEY = 'greenscope.demo.workspace.v2';
 
 export const DEMO_USERS = [
   { id: 'demo-admin', name: 'Demo Super Admin', email: 'admin@greenscope.demo', password: 'DemoAdmin123!', role: 'super_admin', organisation: 'GreenScope' },
