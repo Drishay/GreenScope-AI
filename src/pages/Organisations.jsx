@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Building2, Users } from 'lucide-react';
 import { getDemoState } from '@/lib/demoWorkspace';
+const seedInstitutions = ['NIT Demo Campus', 'Demo Industrial Campus', 'Demo University'];
 
 export default function Organisations() {
   const [params] = useSearchParams();
