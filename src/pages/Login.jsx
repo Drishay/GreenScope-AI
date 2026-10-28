@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { DEMO_USERS, demoLogin, demoRegisterCitizen } from '@/lib/demoWorkspace';
+import { DEMO_USERS, demoLogin, demoRegisterCitizen, getDemoState } from '@/lib/demoWorkspace';
 
 const roleLabels = { super_admin: 'Super Admin', authority: 'Authority', institution: 'Institution', citizen: 'Citizen' };
 
@@ -23,7 +23,7 @@ export default function Login() {
         navigate('/workspace', { replace: true });
         return;
       }
-      if (DEMO_USERS.some((u) => u.email.toLowerCase() === email.trim().toLowerCase())) {
+      if ([...DEMO_USERS, ...(getDemoState().citizens || [])].some((u) => u.email.toLowerCase() === email.trim().toLowerCase())) {
         demoLogin(email, password);
         navigate('/workspace', { replace: true });
         return;
