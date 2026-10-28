@@ -90,7 +90,7 @@ export function updateDemoCase(id, patch, updateText) {
 }
 export function addDemoInvitation(invitation) {
   const state = readState();
-  state.invitations.unshift({ ...invitation, id: `INV-${Date.now().toString().slice(-6)}`, status: 'Pending', createdAt: new Date().toISOString() });
+  state.invitations.unshift({ ...invitation, id: `INV-${Date.now().toString().slice(-6)}`, token: invitation.token || `${crypto.randomUUID()}`, status: 'Pending', createdAt: new Date().toISOString() });
   if (invitation.organisation && !state.organisations.includes(invitation.organisation)) state.organisations.push(invitation.organisation);
   writeState(state); return state.invitations[0];
 }
