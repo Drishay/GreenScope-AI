@@ -81,31 +81,31 @@ app.post('/api/analyze', (req, res) => {
 
 // Legacy local JSON report endpoints are retained for v1 compatibility.
 // They are demo-only, not case-management records, and will be migrated separately.
-app.post('/api/analyses', (req, res) => {
+app.post('/api/analyses', attachCurrentUser, requireAuth, (req, res) => {
   try {
-    const record = createAnalysis({ ...req.body, data_status: req.body?.data_status || 'synthetic_demo', regulatory_use: false });
+    const record = createAnalysis({ ...req.body, data_status: req.body?.data_status || 'synthetic_demo', regulatory_use: false }, req.auth.userId);
     return res.json(record);
   } catch {
     return res.status(500).json({ error: 'Could not save analysis' });
   }
 });
 
-app.post('/api/analyses/query', (req, res) => {
+app.post('/api/analyses/query', attachCurrentUser, requireAuth, (req, res) => {
   try {
-    return res.json(queryAnalyses(req.body?.opts || {}));
+    return res.json(queryAnalyses(req.body?.opts || {}, req.auth.userId));
   } catch {
     return res.status(500).json({ error: 'Could not query analyses' });
   }
 });
 
-app.get('/api/analyses/:id', (req, res) => {
-  const record = getAnalysisById(req.params.id);
+app.get('/api/analyses/:id', attachCurrentUser, requireAuth, (req, res) => {
+  const record = getAnalysisById(req.params.id, req.auth.userId);
   if (!record) return res.status(404).json({ error: 'Analysis not found' });
   return res.json(record);
 });
 
-app.delete('/api/analyses/:id', (req, res) => {
-  const success = deleteAnalysis(req.params.id);
+app.delete('/api/analyses/:id', attachCurrentUser, requireAuth, (req, res) => {
+  const success = deleteAnalysis(req.params.id, req.auth.userId);
   return res.json({ ok: success });
 });
 
