@@ -13,6 +13,8 @@ import Login from "@/pages/Login";
 import PublicReport from "@/pages/PublicReport";
 import ReportStatus from "@/pages/ReportStatus";
 import Workspace from "@/pages/Workspace";
+import About from "@/pages/About";
+import FAQ from "@/pages/FAQ";
 
 export default function App() {
   return (
@@ -29,6 +31,8 @@ export default function App() {
             <Route path="/report" element={<PublicReport />} />
             <Route path="/report-status" element={<ReportStatus />} />
             <Route path="/workspace" element={<Workspace />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/faq" element={<FAQ />} />
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>
