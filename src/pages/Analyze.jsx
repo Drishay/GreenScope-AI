@@ -5,6 +5,7 @@ import LocationSearch from '@/components/LocationSearch';
 import AnalysisDashboard from '@/components/AnalysisDashboard';
 import { polygonAreaHectares, formatArea } from '@/lib/geoUtils';
 import { PenLine, Undo2, Trash2, Satellite, Route as RoadIcon, Loader2, Leaf, AlertCircle, Check } from 'lucide-react';
+import { getDemoUser, saveDemoAnalysis } from '@/lib/demoWorkspace';
 
 export default function Analyze() {
 const [location, setLocation] = useState(null);
@@ -72,7 +73,7 @@ const handleSave = async () => {
 if (!result) return;
 setSaving(true);
 try {
-const record = await base44.entities.Analysis.create({
+const payload = {
 location_name: location.name,
 lat: location.lat,
 lng: location.lng,
@@ -91,7 +92,20 @@ green_cover_rating: result.green_cover_rating,
 summary: result.summary,
 recommendations: result.recommendations,
 land_use_breakdown: result.land_use_breakdown,
-});
+};
+let record;
+const demoUser = getDemoUser();
+if (demoUser) {
+  record = saveDemoAnalysis(payload, demoUser);
+} else {
+  try { await base44.auth.me(); }
+  catch {
+    window.open('/app/login', '_blank', 'noopener,noreferrer');
+    setError('Login opened in a new tab. Sign in there, return to this analysis, and select Save report again.');
+    return;
+  }
+  record = await base44.entities.Analysis.create(payload);
+}
 setSavedId(record.id);
 setSaved(true);
 } catch (e) {
