@@ -130,6 +130,12 @@ app.use((err, req, res, _next) => {
   return res.status(500).json({ error: 'Internal server error', request_id: req.id });
 });
 
-app.listen(PORT, () => {
-  console.log(`[GreenScope API] Server running on http://localhost:${PORT}`);
-});
+export default app;
+
+// Vercel imports the Express app as a serverless function. Local development
+// continues to start the standalone API server on port 3001.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`[GreenScope API] Server running on http://localhost:${PORT}`);
+  });
+}
