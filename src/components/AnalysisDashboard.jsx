@@ -70,7 +70,7 @@ Environmental Report
 {/* Stat cards */}
 <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
 <StatCard type="vegetation" label="Vegetation cover" value={`${formatNumber(data.vegetation_pct, 1)}`} suffix="%" accent="#5f7d56" hint="Trees, shrubs, grass" />
-<StatCard type="buildings" label="Built structures" value={`${formatNumber(data.buildings_pct, 1)}`} suffix="%" accent="#5a6168" hint="Buildings & rooftops" />
+<StatCard type="buildings" label="Built-up area" value={`${formatNumber(data.buildings_pct, 1)}`} suffix="%" accent="#5a6168" hint="Buildings, roads & impervious surfaces" />
 <StatCard type="open_land" label="Open / bare land" value={formatNumber(data.open_land_pct, 1)} suffix="%" accent="#cdbb93" hint="Satellite-derived area" />
 <StatCard type="water" label="Water cover" value={formatNumber(data.water_pct, 1)} suffix="%" accent="#4f8a93" hint="Satellite-derived area" />
 </div>
