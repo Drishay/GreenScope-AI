@@ -32,9 +32,11 @@ def initialize_earth_engine():
     service_account = os.getenv("EE_SERVICE_ACCOUNT")
     private_key = os.getenv("EE_PRIVATE_KEY")
     try:
-        if service_account and private_key:
+        service_account_key = os.getenv("EE_SERVICE_ACCOUNT_KEY_JSON")
+        if service_account and service_account_key:
+            key_info = json.loads(service_account_key)
             credentials = ee.ServiceAccountCredentials(
-                service_account, key_data=private_key.replace("\\n", "\n")
+                service_account, key_data=json.dumps(key_info)
             )
             ee.Initialize(credentials, project=project)
         elif project:
@@ -92,7 +94,7 @@ def health():
 
 @app.post("/analyze")
 def analyze(payload: AnalyzeRequest):
-    geometry = validate_polygon(payload.polygon)
+    validate_polygon(payload.polygon)
     try:
         initialize_earth_engine()
         region = ee.Geometry(payload.polygon)
