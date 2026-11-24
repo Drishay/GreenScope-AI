@@ -3,7 +3,7 @@ import LandCoverPie from './LandCoverPie';
 import ScoreGauge from './ScoreGauge';
 import StatCard from './StatCard';
 import { CATEGORY_COLORS, formatNumber, formatArea, ratingTone } from '@/lib/geoUtils';
-import { Sprout, Leaf, ArrowRight } from 'lucide-react';
+import { Sprout, Leaf, ArrowRight, Satellite } from 'lucide-react';
 
 export default function AnalysisDashboard({ data, onSave, saving, saved }) {
 const breakdown = data.land_use_breakdown && data.land_use_breakdown.length
@@ -47,31 +47,53 @@ Environmental Report
 </div>
 </div>
 
+{data.data_status === 'satellite_ml' && (
+<div className="rounded-2xl border border-emerald-600/20 bg-emerald-600/5 p-4 text-sm">
+<div className="flex flex-wrap items-center gap-2 font-medium text-foreground"><Satellite className="h-4 w-4 text-emerald-700" /> Satellite and ML analysis</div>
+<p className="mt-1 text-xs text-muted-foreground">Source: {data.source} · Image date: {data.imagery_date || 'Not reported'} · Model: {data.model}</p>
+<p className="mt-2 text-xs leading-relaxed text-muted-foreground">{data.classification_note}</p>
+</div>
+)}
+{data.satellite_image_url && (
+<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+<div className="overflow-hidden rounded-2xl border border-border bg-card">
+<img src={data.satellite_image_url} alt="Satellite image clipped to the selected polygon" className="h-64 w-full object-cover" />
+<div className="p-3"><p className="text-sm font-medium">Original satellite image</p><p className="text-xs text-muted-foreground">Sentinel-2 · {data.imagery_date}</p></div>
+</div>
+{data.classified_image_url && <div className="overflow-hidden rounded-2xl border border-border bg-card">
+<img src={data.classified_image_url} alt="Machine-learning land-cover classification map" className="h-64 w-full object-cover" />
+<div className="p-3"><p className="text-sm font-medium">Land-cover classification</p><p className="text-xs text-muted-foreground">Dynamic World · 10 m classes</p></div>
+</div>}
+</div>
+)}
+
 {/* Stat cards */}
 <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
 <StatCard type="vegetation" label="Vegetation cover" value={`${formatNumber(data.vegetation_pct, 1)}`} suffix="%" accent="#5f7d56" hint="Trees, shrubs, grass" />
 <StatCard type="buildings" label="Built structures" value={`${formatNumber(data.buildings_pct, 1)}`} suffix="%" accent="#5a6168" hint="Buildings & rooftops" />
-<StatCard type="absorption" label="CO₂ absorbed" value={formatNumber(data.carbon_absorption_tons_year, 1)} suffix="t/yr" accent="#4f8a93" hint="By local vegetation" />
-<StatCard type="trees" label="Tree equivalents" value={formatNumber(data.tree_canopy_estimate)} accent="#6f8a64" hint="Mature-tree canopy" />
+<StatCard type="open_land" label="Open / bare land" value={formatNumber(data.open_land_pct, 1)} suffix="%" accent="#cdbb93" hint="Satellite-derived area" />
+<StatCard type="water" label="Water cover" value={formatNumber(data.water_pct, 1)} suffix="%" accent="#4f8a93" hint="Satellite-derived area" />
 </div>
 
 {/* Charts row */}
 <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 <div className="rounded-3xl border border-border bg-card p-6">
 <h3 className="font-display text-lg font-semibold text-foreground">Land-cover distribution</h3>
-<p className="mt-0.5 text-xs text-muted-foreground">Indicative share of the analyzed area</p>
+<p className="mt-0.5 text-xs text-muted-foreground">Satellite-derived share of the analyzed area</p>
 <div className="mt-5">
 <LandCoverPie breakdown={breakdown} />
 </div>
 </div>
 
 <div className="rounded-3xl border border-border bg-card p-6">
-<h3 className="font-display text-lg font-semibold text-foreground">Sustainability profile</h3>
-<p className="mt-0.5 text-xs text-muted-foreground">Composite environmental indicators</p>
+<h3 className="font-display text-lg font-semibold text-foreground">Environmental indicators</h3>
+<p className="mt-0.5 text-xs text-muted-foreground">Only validated indicators are displayed</p>
+{data.sustainability_score != null || data.carbon_impact_score != null ? (
 <div className="mt-6 flex items-center justify-around gap-4">
-<ScoreGauge score={data.sustainability_score} label="Sustainability" />
-<ScoreGauge score={data.carbon_impact_score} label="Carbon impact" invert />
+{data.sustainability_score != null && <ScoreGauge score={data.sustainability_score} label="Sustainability" />}
+{data.carbon_impact_score != null && <ScoreGauge score={data.carbon_impact_score} label="Carbon impact" invert />}
 </div>
+) : <p className="mt-5 text-sm leading-relaxed text-muted-foreground">Carbon impact and absorption are not inferred from satellite imagery alone. Add verified operational data and validated environmental factors before reporting these values.</p>}
 </div>
 
 <div className="rounded-3xl border border-border bg-card p-6">
@@ -103,16 +125,7 @@ contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--bor
 <div className="rounded-3xl border border-border bg-card p-6">
 <h3 className="font-display text-lg font-semibold text-foreground">Assessment</h3>
 <p className="mt-3 text-sm leading-relaxed text-foreground/80">{data.summary}</p>
-<div className="mt-5 grid grid-cols-2 gap-3">
-<div className="rounded-xl bg-muted/60 p-4">
-<p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Carbon impact</p>
-<p className="mt-1 font-display text-xl font-semibold text-foreground">{formatNumber(data.carbon_impact_score, 0)}<span className="text-sm text-muted-foreground">/100</span></p>
-</div>
-<div className="rounded-xl bg-muted/60 p-4">
-<p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Sustainability</p>
-<p className="mt-1 font-display text-xl font-semibold text-foreground">{formatNumber(data.sustainability_score, 0)}<span className="text-sm text-muted-foreground">/100</span></p>
-</div>
-</div>
+{data.data_status === 'satellite_ml' && <p className="mt-4 text-xs text-muted-foreground">These results describe land-cover composition only; they are not a carbon audit or regulatory finding.</p>}
 </div>
 
 <div className="rounded-3xl border border-border bg-card p-6">
