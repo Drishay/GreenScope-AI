@@ -30,7 +30,6 @@ def initialize_earth_engine():
         return
     project = os.getenv("EE_PROJECT")
     service_account = os.getenv("EE_SERVICE_ACCOUNT")
-    private_key = os.getenv("EE_PRIVATE_KEY")
     try:
         service_account_key = os.getenv("EE_SERVICE_ACCOUNT_KEY_JSON")
         if service_account and service_account_key:
@@ -98,6 +97,11 @@ def analyze(payload: AnalyzeRequest):
     try:
         initialize_earth_engine()
         region = ee.Geometry(payload.polygon)
+        actual_area_hectares = region.area(maxError=1).divide(10000).getInfo()
+        if actual_area_hectares <= 0 or actual_area_hectares > 50000:
+            raise HTTPException(status_code=400, detail="Polygon area must be between 0 and 50,000 hectares.")
+        if abs(actual_area_hectares - payload.area_hectares) / actual_area_hectares > 0.25:
+            raise HTTPException(status_code=400, detail="Submitted area does not match the polygon boundary. Please redraw the polygon.")
         now = datetime.now(timezone.utc)
         start = (now - timedelta(days=365)).strftime("%Y-%m-%d")
         end = now.strftime("%Y-%m-%d")
@@ -116,7 +120,11 @@ def analyze(payload: AnalyzeRequest):
 
         scene = ee.Image(sentinel.first())
         scene_date = ee.Date(scene.get("system:time_start")).format("YYYY-MM-dd").getInfo()
-        rgb = scene.select(["B4", "B3", "B2"])
+        # Mask cloud, cirrus, cloud-shadow and snow pixels using Sentinel-2 SCL.
+        scl = scene.select("SCL")
+        clear_mask = (scl.neq(3).And(scl.neq(8)).And(scl.neq(9))
+                      .And(scl.neq(10)).And(scl.neq(11)))
+        rgb = scene.updateMask(clear_mask).select(["B4", "B3", "B2"])
         satellite_url = make_thumbnail(rgb, region, {"min": 0, "max": 3000, "gamma": 1.2})
 
         # Dynamic World supplies ML-derived, 10 m land-cover labels.
