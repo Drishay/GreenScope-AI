@@ -211,7 +211,6 @@ def analyze(payload: AnalyzeRequest, x_service_token: str | None = Header(defaul
                 "classification_note": "Buildings and roads are combined in the built-up class. Road-specific mapping is not included in this version.",
                 "confidence_note": "Dynamic World provides per-class probabilities. This version uses the modal class; a calibrated confidence summary is not yet exposed.",
                 "area_by_class_m2": class_areas,
-                "pixel_count_observations": int(avg_confidence or 0),
                 "regulatory_use": False,
             }
         }
