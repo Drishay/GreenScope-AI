@@ -20,12 +20,15 @@ app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-store');
   next();
 });
-app.use(cors({
-  origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error('Origin not allowed by CORS'));
-  },
-  credentials: true,
+app.use(cors((req, callback) => {
+  const origin = req.header('Origin');
+  if (!origin || allowedOrigins.includes(origin)) return callback(null, { origin: true, credentials: true });
+  // Same-origin browser requests on Vercel should not need a manually
+  // maintained CORS_ORIGINS list for every preview and production domain.
+  const host = req.header('x-forwarded-host') || req.header('host');
+  const protocol = req.header('x-forwarded-proto') || (req.secure ? 'https' : 'http');
+  if (host && origin === `${protocol}://${host}`) return callback(null, { origin: true, credentials: true });
+  return callback(new Error('Origin not allowed by CORS'));
 }));
 app.use(express.json({ limit: '1mb' }));
 
@@ -130,6 +133,12 @@ app.use((err, req, res, _next) => {
   return res.status(500).json({ error: 'Internal server error', request_id: req.id });
 });
 
-app.listen(PORT, () => {
-  console.log(`[GreenScope API] Server running on http://localhost:${PORT}`);
-});
+export default app;
+
+// Vercel imports the Express app as a serverless function. Local development
+// continues to start the standalone API server on port 3001.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`[GreenScope API] Server running on http://localhost:${PORT}`);
+  });
+}
