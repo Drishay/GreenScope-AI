@@ -1,4 +1,5 @@
 import json
+import hmac
 import os
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -94,7 +95,7 @@ def health():
 @app.post("/analyze")
 def analyze(payload: AnalyzeRequest, x_service_token: str | None = Header(default=None)):
     expected_token = os.getenv("SATELLITE_SERVICE_TOKEN")
-    if not expected_token or not x_service_token or not __import__("hmac").compare_digest(x_service_token, expected_token):
+    if not expected_token or not x_service_token or not hmac.compare_digest(x_service_token, expected_token):
         raise HTTPException(status_code=401, detail="Unauthorized satellite service request.")
     validate_polygon(payload.polygon)
     try:
