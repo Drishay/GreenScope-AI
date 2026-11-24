@@ -21,6 +21,7 @@ Register a Google Cloud project for Earth Engine and create a service account wi
 - `EE_PROJECT`: Google Cloud project ID registered for Earth Engine.
 - `EE_SERVICE_ACCOUNT`: service-account email.
 - `EE_SERVICE_ACCOUNT_KEY_JSON`: the complete service-account JSON key contents. Keep this secret; never add it to Git or frontend variables.
+- `SATELLITE_SERVICE_TOKEN`: a long random shared secret. Configure the same value on the Node API and this Python service.
 
 For local development, set them in your shell or a private `.env` file loaded by your deployment platform.
 
@@ -34,7 +35,7 @@ Health check: `http://localhost:8000/health`
 
 ## 4. Connect the Node API
 
-Set `SATELLITE_SERVICE_URL=http://localhost:8000` in the Node API environment. The React app continues to call the existing `POST /api/analyze` endpoint; Node forwards the validated GeoJSON polygon to this service.
+Set `SATELLITE_SERVICE_URL=http://localhost:8000` and the same `SATELLITE_SERVICE_TOKEN` in the Node API environment. Set `SATELLITE_SERVICE_TOKEN` in the Python service too. The React app continues to call the existing `POST /api/analyze` endpoint; Node forwards the validated GeoJSON polygon to this service.
 
 ## Data and interpretation
 
