@@ -1,30 +1,47 @@
-# GreenScope AI (Standalone Local Edition)
+# GreenScope AI
 
-A 100% local, standalone geospatial environmental-analysis tool.
+A geospatial environmental assessment platform with a React frontend, Node/Express application API, and an optional Python satellite-analysis service.
 
-## Features
-- **Geocoding Search:** Search any location worldwide using OpenStreetMap / Nominatim.
-- **Interactive Boundary Drawing:** Draw polygon boundaries directly onto satellite imagery with real-time area calculation.
-- **Environmental Dashboard:** Land-cover percentages, carbon impact, tree canopy equivalent, and sustainability scoring.
-- **Local Persistence:** Save, browse, and delete environmental reports stored in a local JSON database (`data/analyses.json`).
-- **Completely Offline-Ready (except for public map tiles and geocoding).**
+## Local application
 
-## Getting Started
-
-1. **Install dependencies:**
+1. Install Node.js dependencies:
    ```bash
    npm install
    ```
-
-2. **Start both the backend API and frontend:**
+2. Copy `.env.example` to `.env` and configure the existing database/session values.
+3. Start the web app and Node API:
    ```bash
    npm run dev
    ```
-   This runs:
-   - Backend API: `http://localhost:3001`
-   - Frontend Vite: `http://localhost:5173`
+   - Frontend: http://localhost:5173
+   - Node API: http://localhost:3001
 
-3. **Build for production:**
+## Real satellite analysis (first integration)
+
+The analysis endpoint now requires a drawn GeoJSON polygon and forwards it to the Python service. It does not silently fall back to synthetic analysis.
+
+1. Register a Google Cloud project for Earth Engine and create a service-account key.
+2. Configure `EE_PROJECT`, `EE_SERVICE_ACCOUNT`, `EE_SERVICE_ACCOUNT_KEY_JSON`, and `SATELLITE_SERVICE_TOKEN` in the Python service environment.
+3. Configure `SATELLITE_SERVICE_URL` and the same `SATELLITE_SERVICE_TOKEN` in the Node API environment.
+4. Start the Python service:
    ```bash
-   npm run build
+   cd satellite_service
+   python -m venv .venv
+   # Windows: .venv\\Scripts\\activate
+   # macOS/Linux: source .venv/bin/activate
+   pip install -r requirements.txt
+   uvicorn main:app --reload --port 8000
    ```
+
+See [satellite_service/README.md](satellite_service/README.md) for the full setup.
+
+## Current satellite-analysis scope
+
+- Sentinel-2 SR Harmonized imagery, with cloud/shadow masking and acquisition date.
+- Google Dynamic World 10 m ML land-cover predictions.
+- Vegetation, combined built-up, open/bare land and water area shares.
+- Original and classified image previews.
+- Roads are not separately classified in this iteration; Dynamic World combines roads and buildings in its built-up class.
+- Carbon emissions, absorption, tree equivalents and composite sustainability scores are intentionally not generated until defensible factors and operational data are integrated.
+
+All results are indicative decision-support information, not a certified environmental audit.
