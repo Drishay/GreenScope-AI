@@ -5,6 +5,9 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import ee
+from dotenv import load_dotenv
+
+load_dotenv()
 from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel, Field
 from shapely.geometry import shape
