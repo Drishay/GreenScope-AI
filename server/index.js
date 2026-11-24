@@ -2,7 +2,6 @@ import crypto from 'node:crypto';
 import express from 'express';
 import cors from 'cors';
 import { searchLocation } from './geocode.js';
-import { generateFakeAnalysis } from './fakeAnalyze.js';
 import { createAnalysis, getAnalysisById, queryAnalyses, deleteAnalysis } from './store.js';
 import { attachCurrentUser, registerAuthRoutes, requireAuth } from './auth.js';
 import { checkDatabase } from './db.js';
@@ -58,27 +57,47 @@ app.post('/api/geocode', async (req, res) => {
   }
 });
 
-// 6.2 Public advisory analysis. This endpoint still returns SYNTHETIC demo values.
-app.post('/api/analyze', (req, res) => {
+// 6.2 Satellite-backed land-cover analysis. No synthetic fallback is used.
+app.post('/api/analyze', async (req, res) => {
+  const { location_name, lat, lng, area_hectares, polygon } = req.body || {};
+  const name = String(location_name || '').trim();
+  const latNum = Number(lat);
+  const lngNum = Number(lng);
+  const areaNum = Number(area_hectares);
+
+  if (!name || !Number.isFinite(latNum) || !Number.isFinite(lngNum) || !Number.isFinite(areaNum)) {
+    return res.status(400).json({ error: 'Missing or invalid analysis parameters.' });
+  }
+  if (areaNum <= 0 || areaNum > 50000) return res.status(400).json({ error: 'Area out of supported range (0–50,000 ha).' });
+  if (latNum < -90 || latNum > 90 || lngNum < -180 || lngNum > 180) return res.status(400).json({ error: 'Invalid centre coordinates.' });
+  if (!polygon || polygon.type !== 'Polygon' || !Array.isArray(polygon.coordinates?.[0]) || polygon.coordinates[0].length < 4) {
+    return res.status(400).json({ error: 'A valid GeoJSON Polygon boundary is required. Please draw at least three vertices.' });
+  }
+
+  const serviceUrl = process.env.SATELLITE_SERVICE_URL;
+  if (!serviceUrl) return res.status(503).json({ error: 'Satellite analysis is not configured. Set SATELLITE_SERVICE_URL and Earth Engine credentials on the API service.' });
+
   try {
-    const { location_name, lat, lng, area_hectares } = req.body || {};
-    const name = String(location_name || '').trim();
-    const latNum = Number(lat);
-    const lngNum = Number(lng);
-    const areaNum = Number(area_hectares);
-
-    if (!name || !Number.isFinite(latNum) || !Number.isFinite(lngNum) || !Number.isFinite(areaNum)) {
-      return res.status(400).json({ error: 'Missing or invalid parameters' });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 120000);
+    let upstream;
+    try {
+      upstream = await fetch(`${serviceUrl.replace(/\/$/, '')}/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ location_name: name, polygon, area_hectares: areaNum }),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeout);
     }
-    if (areaNum <= 0 || areaNum > 50000) return res.status(400).json({ error: 'Area out of supported range (0–50,000 ha)' });
-    if (latNum < -90 || latNum > 90 || lngNum < -180 || lngNum > 180) return res.status(400).json({ error: 'Invalid coordinates' });
-
-    const analysis = generateFakeAnalysis({ location_name: name, lat: latNum, lng: lngNum, area_hectares: areaNum });
-    analysis.data_status = 'synthetic_demo';
-    analysis.regulatory_use = false;
-    return res.json({ analysis });
-  } catch {
-    return res.status(500).json({ error: 'Analysis failed' });
+    const payload = await upstream.json().catch(() => ({}));
+    if (!upstream.ok) return res.status(upstream.status >= 500 ? 502 : upstream.status).json({ error: payload.detail || payload.error || 'Satellite analysis provider failed.' });
+    if (!payload.analysis) return res.status(502).json({ error: 'Satellite service returned an invalid response.' });
+    return res.json({ analysis: { ...payload.analysis, regulatory_use: false } });
+  } catch (error) {
+    const message = error.name === 'AbortError' ? 'Satellite analysis timed out. Try a smaller polygon.' : 'Satellite analysis service is unavailable.';
+    return res.status(502).json({ error: message });
   }
 });
 
