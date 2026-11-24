@@ -20,7 +20,7 @@ Register a Google Cloud project for Earth Engine and create a service account wi
 
 - `EE_PROJECT`: Google Cloud project ID registered for Earth Engine.
 - `EE_SERVICE_ACCOUNT`: service-account email.
-- `EE_PRIVATE_KEY`: service-account private key PEM. Keep this secret; never add it to Git or frontend variables.
+- `EE_SERVICE_ACCOUNT_KEY_JSON`: the complete service-account JSON key contents. Keep this secret; never add it to Git or frontend variables.
 
 For local development, set them in your shell or a private `.env` file loaded by your deployment platform.
 
