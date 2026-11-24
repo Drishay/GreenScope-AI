@@ -39,7 +39,7 @@ Set `SATELLITE_SERVICE_URL=http://localhost:8000` and the same `SATELLITE_SERVIC
 
 ## Data and interpretation
 
-- Sentinel-2 SR Harmonized supplies the visual satellite image. The response includes the selected scene acquisition date.
+- Sentinel-2 SR Harmonized supplies the visual satellite image. The service searches a rolling 90-day window for the latest scene with scene-level cloud cover at or below 40%, masks cloud/shadow/snow pixels, and returns the selected scene acquisition date. If no suitable scene is found, the request fails clearly rather than fabricating an image.
 - Google Dynamic World supplies 10 m ML land-cover labels. The current implementation aggregates trees, grass, flooded vegetation, crops and shrub/scrub into vegetation; built into built-up; bare and snow/ice into open land; and water separately.
 - Dynamic World does not distinguish roads from buildings. The built-up result must not be presented as building-only. A later OSM overlay can provide a separate road network estimate.
 - Carbon impact, carbon absorption, tree counts and composite sustainability scores are intentionally returned as null. These require separately validated methods and/or verified operational data.
