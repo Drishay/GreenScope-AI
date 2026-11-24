@@ -55,6 +55,10 @@ location_name: location.name,
 lat: location.lat,
 lng: location.lng,
 area_hectares: area,
+polygon: {
+  type: 'Polygon',
+  coordinates: [[...vertices.map(([lat, lng]) => [lng, lat]), [vertices[0][1], vertices[0][0]]]],
+},
 });
 if (res.data?.error) throw new Error(res.data.error);
 const analysis = res.data?.analysis;
@@ -79,6 +83,12 @@ lat: location.lat,
 lng: location.lng,
 area_hectares: area,
 boundary: vertices,
+data_status: result.data_status,
+source: result.source,
+imagery_date: result.imagery_date,
+satellite_image_url: result.satellite_image_url,
+classified_image_url: result.classified_image_url,
+classification_note: result.classification_note,
 vegetation_pct: result.vegetation_pct,
 buildings_pct: result.buildings_pct,
 roads_pct: result.roads_pct,
@@ -126,7 +136,7 @@ return (
 Analyze an area
 </h1>
 <p className="mt-2 max-w-2xl text-muted-foreground">
-Search a location, draw its boundary on the satellite map, and run an AI land-cover and carbon assessment.
+Search a location, draw its boundary, and analyze real Sentinel-2 imagery with machine-learning land-cover predictions.
 </p>
 </div>
 
@@ -207,7 +217,7 @@ basemap === 'street' ? 'bg-primary text-primary-foreground' : 'bg-secondary text
 3 · Run assessment
 </label>
 <p className="mt-2 text-xs text-muted-foreground">
-{canAnalyze ? 'Ready to analyze.' : vertices.length < 3 ? 'Draw at least 3 vertices to define an area.' : 'Select a location first.'}
+{canAnalyze ? 'Ready to retrieve satellite imagery and run land-cover classification.' : vertices.length < 3 ? 'Draw at least 3 vertices to define an area.' : 'Select a location first.'}
 </p>
 <button
 onClick={handleAnalyze}
