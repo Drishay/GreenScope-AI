@@ -108,7 +108,7 @@ def analyze(payload: AnalyzeRequest, x_service_token: str | None = Header(defaul
         if abs(actual_area_hectares - payload.area_hectares) / actual_area_hectares > 0.25:
             raise HTTPException(status_code=400, detail="Submitted area does not match the polygon boundary. Please redraw the polygon.")
         now = datetime.now(timezone.utc)
-        start = (now - timedelta(days=365)).strftime("%Y-%m-%d")
+        start = (now - timedelta(days=90)).strftime("%Y-%m-%d")
         end = now.strftime("%Y-%m-%d")
 
         # Select a recent, relatively clear Sentinel-2 surface-reflectance scene.
@@ -121,7 +121,7 @@ def analyze(payload: AnalyzeRequest, x_service_token: str | None = Header(defaul
         )
         sentinel_count = sentinel.size().getInfo()
         if not sentinel_count:
-            raise HTTPException(status_code=422, detail="No suitable Sentinel-2 image found for this polygon in the last 12 months. Try another area.")
+            raise HTTPException(status_code=422, detail="No suitable Sentinel-2 image found for this polygon in the last 90 days. Try another area.")
 
         scene = ee.Image(sentinel.first())
         scene_date = ee.Date(scene.get("system:time_start")).format("YYYY-MM-dd").getInfo()
