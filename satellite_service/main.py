@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import ee
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel, Field
 from shapely.geometry import shape
 from shapely.validation import explain_validity
@@ -92,7 +92,10 @@ def health():
     return {"ok": True, "service": "greenscope-satellite", "earth_engine_initialized": _ee_ready}
 
 @app.post("/analyze")
-def analyze(payload: AnalyzeRequest):
+def analyze(payload: AnalyzeRequest, x_service_token: str | None = Header(default=None)):
+    expected_token = os.getenv("SATELLITE_SERVICE_TOKEN")
+    if not expected_token or not x_service_token or not __import__("hmac").compare_digest(x_service_token, expected_token):
+        raise HTTPException(status_code=401, detail="Unauthorized satellite service request.")
     validate_polygon(payload.polygon)
     try:
         initialize_earth_engine()
