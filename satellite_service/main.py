@@ -64,8 +64,6 @@ def validate_polygon(geojson: dict[str, Any]):
     minx, miny, maxx, maxy = geom.bounds
     if minx < -180 or maxx > 180 or miny < -90 or maxy > 90:
         raise HTTPException(status_code=400, detail="Polygon coordinates are outside valid longitude/latitude bounds.")
-    if geom.area > 5:
-        raise HTTPException(status_code=400, detail="Selected polygon is too large for this analysis endpoint.")
     return geom
 
 def make_thumbnail(image, region, vis, dimensions=768):
@@ -166,17 +164,6 @@ def analyze(payload: AnalyzeRequest, x_service_token: str | None = Header(defaul
             region,
             {"min": 1, "max": 4, "palette": ["#5f7d56", "#a86a3e", "#cdbb93", "#4f8a93"]},
         )
-        avg_confidence = (
-            ee.ImageCollection("GOOGLE/DYNAMICWORLD/V1")
-            .filterBounds(region)
-            .filterDate(start, end)
-            .select("label")
-            .count()
-            .reduceRegion(ee.Reducer.mean(), region, 10, maxPixels=1e9, tileScale=4)
-            .get("label")
-            .getInfo()
-        )
-
         vegetation_pct = round(percentages["Vegetation"], 2)
         buildings_pct = round(percentages["Buildings / built-up"], 2)
         open_pct = round(percentages["Open Land"], 2)
@@ -195,7 +182,7 @@ def analyze(payload: AnalyzeRequest, x_service_token: str | None = Header(defaul
             "analysis": {
                 "vegetation_pct": vegetation_pct,
                 "buildings_pct": buildings_pct,
-                "roads_pct": 0,
+                "roads_pct": None,
                 "open_land_pct": open_pct,
                 "water_pct": water_pct,
                 "carbon_impact_score": None,
@@ -222,7 +209,7 @@ def analyze(payload: AnalyzeRequest, x_service_token: str | None = Header(defaul
                 "classified_image_url": classified_url,
                 "model": "Google Dynamic World (10 m)",
                 "classification_note": "Buildings and roads are combined in the built-up class. Road-specific mapping is not included in this version.",
-                "confidence_note": "Dynamic World provides per-pixel class probabilities; this version reports the modal class and does not interpret image-count as classification confidence.",
+                "confidence_note": "Dynamic World provides per-class probabilities. This version uses the modal class; a calibrated confidence summary is not yet exposed.",
                 "area_by_class_m2": class_areas,
                 "pixel_count_observations": int(avg_confidence or 0),
                 "regulatory_use": False,
