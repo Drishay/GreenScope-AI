@@ -84,7 +84,7 @@ app.post('/api/analyze', async (req, res) => {
     try {
       upstream = await fetch(`${serviceUrl.replace(/\/$/, '')}/analyze`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Service-Token': process.env.SATELLITE_SERVICE_TOKEN || '' },
         body: JSON.stringify({ location_name: name, polygon, area_hectares: areaNum }),
         signal: controller.signal,
       });
